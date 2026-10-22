@@ -4,8 +4,6 @@ Notable changes to Planet Coordinate Picker are documented here.
 
 This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
 
-## [Unreleased]
-
 ## [0.2.1] - 2026-10-22
 
 ### Fixed
