@@ -4,6 +4,13 @@ Notable changes to Planet Coordinate Picker are documented here.
 
 This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
 
+## [0.3.0] - 2026-10-22
+
+### Changed
+
+- Remove planetocentric/planetographic latitude selection and conversion. Latitude is now reported directly from the associated geographic CRS.
+- Remove ellipsoid validation used only for latitude convention selection.
+
 ## [0.2.2] - 2026-10-22
 
 ### Changed
