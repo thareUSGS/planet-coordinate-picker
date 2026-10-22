@@ -6,11 +6,17 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
-### Changed
+## [0.2.0] - 2026-10-22
+
+### Added
 
 - Add planetographic/planetocentric latitude selection for ellipsoidal bodies; disable the option for spherical bodies and refresh availability when the project CRS changes.
 - Resolve latitude and longitude using the map canvas CRS's associated geographic CRS instead of assuming WGS 84, supporting planetary coordinate systems where QGIS provides a geographic CRS.
 - Make longitude range (-180 to 180 or 0 to 360) and positive direction (east or west) independent options.
+- Publish versioned QGIS installation ZIPs as GitHub Release assets when a `v*` tag is pushed.
+
+### Changed
+
 - Improve source formatting and add concise code documentation.
 
 ### Fixed
