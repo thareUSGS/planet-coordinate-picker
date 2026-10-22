@@ -16,15 +16,10 @@ Captured coordinates are kept internally in the associated geographic CRS and ar
 
 Planet Coordinate Picker is distributed from this GitHub repository and is not listed in the QGIS Plugin Repository.
 
-1. Download this GitHub repository as a ZIP and extract it.
-2. In PowerShell, change to the extracted repository folder and create a plug-in ZIP:
+1. Download `PlanetCoordinatePicker.zip` from the [latest GitHub release](https://github.com/thareUSGS/planet-coordinate-picker/releases/latest).
+2. In QGIS, choose **Plugins > Manage and Install Plugins > Install from ZIP**, select `PlanetCoordinatePicker.zip`, and confirm installation.
 
-   ```powershell
-   Compress-Archive -Path .\coordinate_picker_plugin -DestinationPath .\PlanetCoordinatePicker.zip -Force
-   ```
-
-   The resulting archive contains the `coordinate_picker_plugin` folder with `metadata.txt` inside it.
-3. In QGIS, choose **Plugins > Manage and Install Plugins > Install from ZIP**, select `PlanetCoordinatePicker.zip`, and confirm installation.
+The release ZIP contains the `coordinate_picker_plugin` folder with `metadata.txt` inside it.
 
 Do not search the QGIS Plugin Repository for this plug-in.
 
