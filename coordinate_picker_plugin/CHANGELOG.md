@@ -4,6 +4,12 @@ Notable changes to Planet Coordinate Picker are documented here.
 
 This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
 
+## [0.2.2] - 2026-10-22
+
+### Changed
+
+- Use NumPy tangent-based formulas for planetocentric-to-planetographic and inverse latitude conversion.
+
 ## [0.2.1] - 2026-10-22
 
 ### Fixed
@@ -17,7 +23,7 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Add planetographic/planetocentric latitude selection for ellipsoidal bodies; disable the option for spherical bodies and refresh availability when the project CRS changes.
 - Resolve latitude and longitude using the map canvas CRS's associated geographic CRS instead of assuming WGS 84, supporting planetary coordinate systems where QGIS provides a geographic CRS.
 - Make longitude range (-180 to 180 or 0 to 360) and positive direction (east or west) independent options.
-- Publish a QGIS installation ZIP named with the plug-in name and release tag (for example, `PlanetCoordinatePicker-v0.2.0.zip`) whenever a `v*` release tag is pushed.
+- Publish a QGIS installation ZIP named with the plug-in name and release tag (for example, `PlanetCoordinatePicker-v0.2.0.zip`) when a `v*` tag is pushed.
 
 ### Changed
 
