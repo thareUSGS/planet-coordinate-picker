@@ -1,6 +1,18 @@
 [general]
 name=Planet Coordinate Picker
 description=Show latitude and longitude from any map CRS and capture map points.
+version=0.2.2
+qgisMinimumVersion=3.22
+qgisMaximumVersion=4.99
+author=Copilot A.I. (defined by Trent Hare)
+about=Live planetary latitude/longitude readout and click-to-capture table with selectable longitude, direction, and latitude types.
+category=Vector
+license=GPL-3.0-only
+experimental=False
+deprecated=False
+[general]
+name=Planet Coordinate Picker
+description=Show latitude and longitude from any map CRS and capture map points.
 version=0.2.1
 qgisMinimumVersion=3.22
 qgisMaximumVersion=4.99
