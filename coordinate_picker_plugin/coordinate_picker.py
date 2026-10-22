@@ -7,7 +7,6 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import (
     QgsCoordinateTransform,
     QgsCsException,
-    QgsEllipsoidUtils,
     QgsProject,
 )
 
@@ -123,26 +122,20 @@ class CoordinatePicker:
             )
 
     def _refresh_coordinate_crs(self, *_args):
-        """Update the latitude selector when the project's body CRS changes."""
+        """Refresh the geographic CRS label when the project CRS changes."""
         if self.dock is None:
             return
         try:
-            target_crs, semi_major, semi_minor = (
-                self._geographic_crs_details()
-            )
+            target_crs = self._geographic_crs()
         except (QgsCsException, ValueError) as error:
             message = "Could not determine the geographic CRS: {}".format(error)
             self.dock.set_geographic_crs_error(message)
             self.dock.set_status(message)
             return
-        self.dock.set_coordinate_crs(
-            target_crs.description(),
-            semi_major,
-            semi_minor,
-        )
+        self.dock.set_coordinate_crs(target_crs.description())
 
-    def _geographic_crs_details(self):
-        """Return the geographic CRS and its ellipsoid axes."""
+    def _geographic_crs(self):
+        """Return the map CRS's associated geographic CRS."""
         source_crs = self.canvas.mapSettings().destinationCrs()
         if not source_crs.isValid():
             raise ValueError("The map canvas CRS is not valid.")
@@ -153,29 +146,13 @@ class CoordinatePicker:
                 "The map canvas CRS has no associated geographic CRS. "
                 "Choose a CRS with a valid geographic base."
             )
-        ellipsoid = QgsEllipsoidUtils.ellipsoidParameters(
-            target_crs.ellipsoidAcronym()
-        )
-        if not ellipsoid.valid:
-            raise ValueError(
-                "The geographic CRS does not define a valid ellipsoid."
-            )
-        semi_major = ellipsoid.semiMajor
-        semi_minor = ellipsoid.semiMinor
-        if (
-            not math.isfinite(semi_major)
-            or not math.isfinite(semi_minor)
-            or semi_major <= 0
-            or semi_minor <= 0
-        ):
-            raise ValueError("The geographic CRS has invalid ellipsoid axes.")
-        return target_crs, semi_major, semi_minor
+        return target_crs
 
     def _transform_to_geographic(self, point):
         """Transform a canvas point to its CRS's associated geographic CRS."""
         project = self._project
         source_crs = self.canvas.mapSettings().destinationCrs()
-        target_crs, semi_major, semi_minor = self._geographic_crs_details()
+        target_crs = self._geographic_crs()
         transform = QgsCoordinateTransform(
             source_crs,
             target_crs,
@@ -188,34 +165,22 @@ class CoordinatePicker:
             raise ValueError("The transformed coordinates are not finite.")
         if not (-90.0 <= latitude <= 90.0):
             raise ValueError("The transformed latitude is outside -90 to 90.")
-        return (
-            latitude,
-            longitude,
-            target_crs.description(),
-            semi_major,
-            semi_minor,
-        )
+        return latitude, longitude, target_crs.description()
 
     def _update_live_coordinate(self, point):
         """Update the readout as the cursor moves over the map."""
         if self.dock is None:
             return
         try:
-            (
-                latitude,
-                longitude,
-                crs_description,
-                semi_major,
-                semi_minor,
-            ) = (
-                self._transform_to_geographic(point)
+            latitude, longitude, crs_description = self._transform_to_geographic(
+                point
             )
         except (QgsCsException, ValueError) as error:
             self.dock.set_status(
                 "Could not transform cursor coordinates: {}".format(error)
             )
             return
-        self.dock.set_coordinate_crs(crs_description, semi_major, semi_minor)
+        self.dock.set_coordinate_crs(crs_description)
         self.dock.update_live_coordinate(latitude, longitude)
 
     def _capture_coordinate(self, point):
@@ -223,17 +188,13 @@ class CoordinatePicker:
         if self.dock is None:
             return
         try:
-            (
-                latitude,
-                longitude,
-                crs_description,
-                semi_major,
-                semi_minor,
-            ) = (
-                self._transform_to_geographic(point)
+            latitude, longitude, crs_description = self._transform_to_geographic(
+                point
             )
         except (QgsCsException, ValueError) as error:
-            self.dock.set_status("Could not capture coordinates: {}".format(error))
+            self.dock.set_status(
+                "Could not capture coordinates: {}".format(error)
+            )
             return
-        self.dock.set_coordinate_crs(crs_description, semi_major, semi_minor)
+        self.dock.set_coordinate_crs(crs_description)
         self.dock.add_coordinate(latitude, longitude)
