@@ -4,6 +4,12 @@ Notable changes to Planet Coordinate Picker are documented here.
 
 This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
 
+## [0.3.1] - 2026-10-22
+
+### Fixed
+
+- Fix a syntax error in copied-coordinate text formatting that prevented the plug-in from loading.
+
 ## [0.3.0] - 2026-10-22
 
 ### Changed
