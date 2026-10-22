@@ -4,7 +4,7 @@ A QGIS plug-in for live latitude/longitude readout and click-to-capture using th
 
 See the [plug-in guide](coordinate_picker_plugin/README.md) for installation and usage, the [changelog](coordinate_picker_plugin/CHANGELOG.md) for changes, and the [GPL-3.0-only license](coordinate_picker_plugin/LICENSE) for licensing and attribution.
 
-The plug-in is distributed from this repository as a ZIP and is not listed in the QGIS Plugin Repository. Follow the installation instructions in the plug-in guide.
+The plug-in is distributed as a ZIP from the [GitHub Releases](https://github.com/thareUSGS/planet-coordinate-picker/releases) and is not listed in the QGIS Plugin Repository. Follow the installation instructions in the plug-in guide.
 
 ## Development
 
