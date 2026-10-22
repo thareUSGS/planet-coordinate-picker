@@ -63,27 +63,32 @@ class LongitudeNormalizationTests(unittest.TestCase):
 class LatitudeConversionTests(unittest.TestCase):
     """Verify planetographic and planetocentric latitude conversion."""
 
-    def test_ellipsoid_converts_planetographic_to_planetocentric(self):
-        latitude = convert_latitude(45.0, PLANETOCENTRIC, 6378137.0, 6356752.314245)
-        self.assertAlmostEqual(latitude, 44.8075768, places=6)
-
-    def test_planetographic_is_unchanged_and_conversion_is_reversible(self):
-        planetographic = 45.0
-        unchanged = convert_latitude(
-            planetographic, PLANETOGRAPHIC, 6378137.0, 6356752.314245
+    def test_default_is_planetocentric_and_planetographic_applies_small_shift(self):
+        planetocentric = 45.0
+        planetographic = convert_latitude(
+            planetocentric, PLANETOGRAPHIC, 6378137.0, 6356752.314245
         )
-        planetocentric = convert_latitude(
-            planetographic, PLANETOCENTRIC, 6378137.0, 6356752.314245
+        unchanged = convert_latitude(
+            planetocentric, PLANETOCENTRIC, 6378137.0, 6356752.314245
+        )
+
+        self.assertAlmostEqual(planetographic, 45.1924232, places=6)
+        self.assertLess(abs(planetographic - planetocentric), 1.0)
+        self.assertEqual(unchanged, planetocentric)
+
+    def test_latitude_conversion_is_reversible(self):
+        planetocentric = 45.0
+        planetographic = convert_latitude(
+            planetocentric, PLANETOGRAPHIC, 6378137.0, 6356752.314245
         )
         recovered = convert_latitude(
-            planetocentric,
-            PLANETOGRAPHIC,
+            planetographic,
+            PLANETOCENTRIC,
             6378137.0,
             6356752.314245,
-            source_type=PLANETOCENTRIC,
+            source_type=PLANETOGRAPHIC,
         )
-        self.assertEqual(unchanged, planetographic)
-        self.assertAlmostEqual(recovered, planetographic, places=12)
+        self.assertAlmostEqual(recovered, planetocentric, places=12)
 
     def test_spherical_body_has_identical_latitude_types(self):
         self.assertEqual(
