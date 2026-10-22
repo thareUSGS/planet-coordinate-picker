@@ -218,8 +218,7 @@ class CoordinatePickerDock(QDockWidget):
                     self._format(self._longitude(longitude)),
                 )
             )
-        return "
-".join(lines)
+        return chr(10).join(lines)
 
     def copy_selected(self):
         """Copy selected table rows to the clipboard."""
