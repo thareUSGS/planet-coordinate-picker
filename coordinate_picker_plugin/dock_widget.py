@@ -70,10 +70,11 @@ class CoordinatePickerDock(QDockWidget):
         options.addWidget(self.longitude_direction)
         options.addWidget(QLabel("Latitude type:"))
         self.latitude_type = QComboBox()
-        self.latitude_type.addItem("Planetographic", PLANETOGRAPHIC)
         self.latitude_type.addItem("Planetocentric", PLANETOCENTRIC)
+        self.latitude_type.addItem("Planetographic", PLANETOGRAPHIC)
         self.latitude_type.setToolTip(
-            "Planetocentric latitude is available only for ellipsoidal bodies."
+            "Planetocentric latitude is the default. Planetographic latitude "
+            "applies the oc2og conversion for ellipsoidal bodies."
         )
         self.latitude_type.currentIndexChanged.connect(self._refresh_display)
         options.addWidget(self.latitude_type)
@@ -204,6 +205,7 @@ class CoordinatePickerDock(QDockWidget):
             self.latitude_type.currentData(),
             semi_major,
             semi_minor,
+            source_type=PLANETOCENTRIC,
         )
 
     def _refresh_display(self, *_args):
@@ -248,11 +250,11 @@ class CoordinatePickerDock(QDockWidget):
 
     def _rows_to_text(self, rows):
         """Return selected rows as tab-separated text for spreadsheet pasting."""
-        lines = ["ID\t{}\tLongitude".format(self._latitude_header())]
+        lines = ["ID	{}	Longitude".format(self._latitude_header())]
         for row in rows:
             latitude, longitude, semi_major, semi_minor = self._coordinates[row]
             lines.append(
-                "{}\t{}\t{}".format(
+                "{}	{}	{}".format(
                     row + 1,
                     self._format(
                         self._latitude(latitude, semi_major, semi_minor)
@@ -260,7 +262,8 @@ class CoordinatePickerDock(QDockWidget):
                     self._format(self._longitude(longitude)),
                 )
             )
-        return "\n".join(lines)
+        return "
+".join(lines)
 
     def copy_selected(self):
         """Copy selected table rows to the clipboard."""
