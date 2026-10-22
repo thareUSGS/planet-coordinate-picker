@@ -39,9 +39,9 @@ def convert_latitude(
     latitude_type,
     semi_major,
     semi_minor,
-    source_type=PLANETOGRAPHIC,
+    source_type=PLANETOCENTRIC,
 ):
-    """Convert latitude between planetographic and planetocentric types."""
+    """Convert planetocentric source latitude to the requested latitude type."""
     values = (latitude, semi_major, semi_minor)
     if not all(math.isfinite(value) for value in values):
         raise ValueError("Latitude and ellipsoid axes must be finite numbers.")
@@ -59,16 +59,15 @@ def convert_latitude(
         return latitude
 
     latitude_radians = math.radians(latitude)
-    if source_type == PLANETOGRAPHIC:
-        # Geodetic-to-geocentric latitude scales the tangent by b^2 / a^2.
-        converted_radians = math.atan2(
-            semi_minor**2 * math.sin(latitude_radians),
-            semi_major**2 * math.cos(latitude_radians),
-        )
-    else:
-        # The inverse relation scales the tangent by a^2 / b^2.
+    if source_type == PLANETOCENTRIC:
+        # oc2og converts only the latitude using the body's ellipsoid axes.
         converted_radians = math.atan2(
             semi_major**2 * math.sin(latitude_radians),
             semi_minor**2 * math.cos(latitude_radians),
+        )
+    else:
+        converted_radians = math.atan2(
+            semi_minor**2 * math.sin(latitude_radians),
+            semi_major**2 * math.cos(latitude_radians),
         )
     return math.degrees(converted_radians)
