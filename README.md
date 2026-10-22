@@ -1,6 +1,6 @@
 # Planet Coordinate Picker
 
-A QGIS plug-in for live latitude/longitude readout and click-to-capture using the map canvas CRS's associated geographic CRS. It supports planetary coordinate systems when QGIS provides a valid associated geographic CRS, and offers planetographic or planetocentric latitude for ellipsoidal bodies.
+A QGIS plug-in for live latitude/longitude readout and click-to-capture using the map canvas CRS's associated geographic CRS. It supports planetary coordinate systems when QGIS provides a valid associated geographic CRS. Latitude is reported directly from that geographic CRS; planetocentric/planetographic selection and conversion are not available.
 
 See the [plug-in guide](coordinate_picker_plugin/README.md) for installation and usage, the [changelog](coordinate_picker_plugin/CHANGELOG.md) for changes, and the [GPL-3.0-only license](coordinate_picker_plugin/LICENSE) for licensing and attribution.
 
@@ -8,7 +8,7 @@ The plug-in is distributed as a ZIP from the [GitHub Releases](https://github.co
 
 ## Development
 
-Run the longitude and latitude conversion tests with Python:
+Run the longitude formatting tests with Python:
 
 ```powershell
 python -m unittest discover -s tests -v
