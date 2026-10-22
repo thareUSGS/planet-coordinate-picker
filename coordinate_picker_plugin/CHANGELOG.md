@@ -9,6 +9,7 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ### Changed
 
 - Use NumPy tangent-based formulas for planetocentric-to-planetographic and inverse latitude conversion.
+- Add original plug-in author attribution to the metadata.
 
 ## [0.2.1] - 2026-10-22
 
