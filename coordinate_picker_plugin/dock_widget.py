@@ -20,12 +20,9 @@ from qgis.PyQt.QtWidgets import (
 
 from .coordinates import (
     EAST_POSITIVE,
-    PLANETOCENTRIC,
-    PLANETOGRAPHIC,
     RANGE_360,
     RANGE_SIGNED,
     WEST_POSITIVE,
-    convert_latitude,
     normalize_longitude,
 )
 
@@ -39,9 +36,7 @@ class CoordinatePickerDock(QDockWidget):
         super().__init__("Planet Coordinate Picker", parent)
         self._coordinates = []
         self._last_coordinate = None
-        self._ellipsoid_axes = (1.0, 1.0)
         self._build_ui()
-        self.latitude_type.setEnabled(False)
 
     def _build_ui(self):
         """Build the dock controls and captured-coordinate table."""
@@ -68,16 +63,6 @@ class CoordinatePickerDock(QDockWidget):
         self.longitude_direction.addItem("West", WEST_POSITIVE)
         self.longitude_direction.currentIndexChanged.connect(self._refresh_display)
         options.addWidget(self.longitude_direction)
-        options.addWidget(QLabel("Latitude type:"))
-        self.latitude_type = QComboBox()
-        self.latitude_type.addItem("Planetocentric", PLANETOCENTRIC)
-        self.latitude_type.addItem("Planetographic", PLANETOGRAPHIC)
-        self.latitude_type.setToolTip(
-            "Planetocentric latitude is the default. Planetographic latitude "
-            "applies the oc2og conversion for ellipsoidal bodies."
-        )
-        self.latitude_type.currentIndexChanged.connect(self._refresh_display)
-        options.addWidget(self.latitude_type)
         options.addWidget(QLabel("Decimal places:"))
         self.precision = QSpinBox()
         self.precision.setRange(0, 12)
@@ -147,36 +132,24 @@ class CoordinatePickerDock(QDockWidget):
         """Show a status or error message below the table."""
         self.status.setText(message)
 
-    def set_coordinate_crs(self, description, semi_major, semi_minor):
+    def set_coordinate_crs(self, description):
         """Show the geographic CRS used for the displayed coordinates."""
-        self._ellipsoid_axes = (semi_major, semi_minor)
-        self.latitude_type.setEnabled(semi_major != semi_minor)
         self.crs_label.setText(
             "Latitude and longitude CRS: {}".format(description)
         )
 
     def set_geographic_crs_error(self, message):
-        """Disable latitude-type selection when the body CRS is unavailable."""
-        self.latitude_type.setEnabled(False)
+        """Show why coordinates cannot be transformed to a geographic CRS."""
         self.crs_label.setText(message)
 
     def update_live_coordinate(self, latitude, longitude):
         """Store raw geographic coordinates and refresh the live readout."""
-        semi_major, semi_minor = self._ellipsoid_axes
-        self._last_coordinate = (
-            latitude,
-            longitude,
-            semi_major,
-            semi_minor,
-        )
+        self._last_coordinate = (latitude, longitude)
         self._refresh_live_readout()
 
     def add_coordinate(self, latitude, longitude):
         """Append a point and refresh the table."""
-        semi_major, semi_minor = self._ellipsoid_axes
-        self._coordinates.append(
-            (latitude, longitude, semi_major, semi_minor)
-        )
+        self._coordinates.append((latitude, longitude))
         self._refresh_table()
         self.status.setText("Captured point {}.".format(len(self._coordinates)))
 
@@ -198,16 +171,6 @@ class CoordinatePickerDock(QDockWidget):
         """Format a coordinate using the selected decimal precision."""
         return "{:.{}f}".format(value, self.precision.value())
 
-    def _latitude(self, latitude, semi_major, semi_minor):
-        """Apply the selected latitude convention for a point's body."""
-        return convert_latitude(
-            latitude,
-            self.latitude_type.currentData(),
-            semi_major,
-            semi_minor,
-            source_type=PLANETOCENTRIC,
-        )
-
     def _refresh_display(self, *_args):
         """Reformat the readout and table after a display option changes."""
         self._refresh_live_readout()
@@ -217,9 +180,8 @@ class CoordinatePickerDock(QDockWidget):
         """Update the cursor readout using the currently selected options."""
         if self._last_coordinate is None:
             return
-        latitude, longitude, semi_major, semi_minor = self._last_coordinate
+        latitude, longitude = self._last_coordinate
         try:
-            latitude = self._latitude(latitude, semi_major, semi_minor)
             longitude = self._longitude(longitude)
         except ValueError as error:
             self.live_readout.setText(str(error))
@@ -232,16 +194,12 @@ class CoordinatePickerDock(QDockWidget):
 
     def _refresh_table(self):
         """Rebuild the table from raw coordinates and current display options."""
-        self.table.setHorizontalHeaderLabels(
-            ["ID", self._latitude_header(), "Longitude"]
-        )
+        self.table.setHorizontalHeaderLabels(["ID", "Latitude", "Longitude"])
         self.table.setRowCount(len(self._coordinates))
-        for row, (latitude, longitude, semi_major, semi_minor) in enumerate(
-            self._coordinates
-        ):
+        for row, (latitude, longitude) in enumerate(self._coordinates):
             values = (
                 str(row + 1),
-                self._format(self._latitude(latitude, semi_major, semi_minor)),
+                self._format(latitude),
                 self._format(self._longitude(longitude)),
             )
             for column, value in enumerate(values):
@@ -250,15 +208,13 @@ class CoordinatePickerDock(QDockWidget):
 
     def _rows_to_text(self, rows):
         """Return selected rows as tab-separated text for spreadsheet pasting."""
-        lines = ["ID	{}	Longitude".format(self._latitude_header())]
+        lines = ["ID	Latitude	Longitude"]
         for row in rows:
-            latitude, longitude, semi_major, semi_minor = self._coordinates[row]
+            latitude, longitude = self._coordinates[row]
             lines.append(
                 "{}	{}	{}".format(
                     row + 1,
-                    self._format(
-                        self._latitude(latitude, semi_major, semi_minor)
-                    ),
+                    self._format(latitude),
                     self._format(self._longitude(longitude)),
                 )
             )
@@ -297,16 +253,14 @@ class CoordinatePickerDock(QDockWidget):
         try:
             with open(filename, "w", newline="", encoding="utf-8-sig") as output:
                 writer = csv.writer(output)
-                writer.writerow(["ID", self._latitude_header(), "Longitude"])
-                for row, (latitude, longitude, semi_major, semi_minor) in enumerate(
+                writer.writerow(["ID", "Latitude", "Longitude"])
+                for row, (latitude, longitude) in enumerate(
                     self._coordinates, start=1
                 ):
                     writer.writerow(
                         [
                             row,
-                            self._format(
-                                self._latitude(latitude, semi_major, semi_minor)
-                            ),
+                            self._format(latitude),
                             self._format(self._longitude(longitude)),
                         ]
                     )
@@ -315,12 +269,6 @@ class CoordinatePickerDock(QDockWidget):
             self.status.setText("Could not write the CSV file.")
             return
         self.status.setText("Exported {} point(s).".format(len(self._coordinates)))
-
-    def _latitude_header(self):
-        """Name the latitude convention used by the current display."""
-        return "Latitude ({})".format(
-            self.latitude_type.currentText().lower()
-        )
 
 
 def _enum(container, group_name, value_name):
