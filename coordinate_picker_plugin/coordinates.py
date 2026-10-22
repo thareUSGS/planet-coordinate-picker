@@ -1,5 +1,7 @@
 import math
 
+import numpy as np
+
 
 RANGE_SIGNED = "signed"
 RANGE_360 = "0_360"
@@ -61,13 +63,11 @@ def convert_latitude(
     latitude_radians = math.radians(latitude)
     if source_type == PLANETOCENTRIC:
         # oc2og converts only the latitude using the body's ellipsoid axes.
-        converted_radians = math.atan2(
-            semi_major**2 * math.sin(latitude_radians),
-            semi_minor**2 * math.cos(latitude_radians),
+        converted_radians = np.arctan(
+            ((semi_major / semi_minor) ** 2) * np.tan(latitude_radians)
         )
     else:
-        converted_radians = math.atan2(
-            semi_minor**2 * math.sin(latitude_radians),
-            semi_major**2 * math.cos(latitude_radians),
+        converted_radians = np.arctan(
+            ((semi_minor / semi_major) ** 2) * np.tan(latitude_radians)
         )
     return math.degrees(converted_radians)
