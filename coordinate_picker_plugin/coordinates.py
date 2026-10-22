@@ -1,14 +1,10 @@
 import math
 
-import numpy as np
-
 
 RANGE_SIGNED = "signed"
 RANGE_360 = "0_360"
 EAST_POSITIVE = "east_positive"
 WEST_POSITIVE = "west_positive"
-PLANETOGRAPHIC = "planetographic"
-PLANETOCENTRIC = "planetocentric"
 
 
 def normalize_longitude(longitude, longitude_range, direction):
@@ -34,40 +30,3 @@ def normalize_longitude(longitude, longitude_range, direction):
         signed = normalized if normalized < 180.0 else normalized - 360.0
         return 0.0 if signed == 0 else signed
     raise ValueError("Unknown longitude range.")
-
-
-def convert_latitude(
-    latitude,
-    latitude_type,
-    semi_major,
-    semi_minor,
-    source_type=PLANETOCENTRIC,
-):
-    """Convert planetocentric source latitude to the requested latitude type."""
-    values = (latitude, semi_major, semi_minor)
-    if not all(math.isfinite(value) for value in values):
-        raise ValueError("Latitude and ellipsoid axes must be finite numbers.")
-    if semi_major <= 0 or semi_minor <= 0:
-        raise ValueError("Ellipsoid axes must be greater than zero.")
-    if not -90.0 <= latitude <= 90.0:
-        raise ValueError("Latitude must be between -90 and 90 degrees.")
-    if latitude_type not in (PLANETOGRAPHIC, PLANETOCENTRIC):
-        raise ValueError("Unknown target latitude type.")
-    if source_type not in (PLANETOGRAPHIC, PLANETOCENTRIC):
-        raise ValueError("Unknown source latitude type.")
-    if semi_major == semi_minor:
-        return latitude
-    if latitude_type == source_type:
-        return latitude
-
-    latitude_radians = math.radians(latitude)
-    if source_type == PLANETOCENTRIC:
-        # oc2og converts only the latitude using the body's ellipsoid axes.
-        converted_radians = np.arctan(
-            ((semi_major / semi_minor) ** 2) * np.tan(latitude_radians)
-        )
-    else:
-        converted_radians = np.arctan(
-            ((semi_minor / semi_major) ** 2) * np.tan(latitude_radians)
-        )
-    return math.degrees(converted_radians)
