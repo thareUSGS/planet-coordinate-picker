@@ -6,9 +6,9 @@ Planet Coordinate Picker displays latitude and longitude while you move the curs
 
 - **Longitude range** is selected independently as either **-180 to 180** or **0 to 360**.
 - **Positive direction** is selected independently as either **East** or **West**. The other direction is negative in the -180 to 180 range; in the 0 to 360 range, values wrap around the full circle.
-- **Latitude type** can be selected as planetographic or planetocentric when the body's associated ellipsoid is not spherical. The selection is disabled for spherical bodies, where both latitude types are identical.
+- **Latitude type** defaults to planetocentric. Planetographic latitude applies the oc2og latitude conversion using the body's ellipsoid when it is not spherical. The selection is disabled for spherical bodies, where both latitude types are identical.
 
-The map CRS's geographic coordinates are treated as planetographic. Planetocentric latitude is calculated from that value using the geographic CRS ellipsoid's semi-major and semi-minor axes.
+The transformed geographic latitude is treated as planetocentric. Selecting planetographic applies only the latitude conversion using the geographic CRS ellipsoid's semi-major and semi-minor axes; longitude is unchanged.
 
 Captured coordinates are kept internally in the associated geographic CRS and are reformatted when you change the longitude range, positive direction, latitude type, or decimal precision.
 
