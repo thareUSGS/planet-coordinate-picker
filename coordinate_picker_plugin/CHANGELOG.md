@@ -6,6 +6,12 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-22
+
+### Fixed
+
+- Use planetocentric latitude as the default and apply oc2og only to latitude when planetographic display is selected.
+
 ## [0.2.0] - 2026-10-22
 
 ### Added
